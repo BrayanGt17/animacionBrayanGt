@@ -20,7 +20,7 @@
         .container {
             text-align: center;
             position: relative;
-            z-index: 10;
+            z-index: 20; /* Mayor z-index para que esté adelante */
             padding: 30px;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -56,7 +56,8 @@
             color: #7b1fa2;
         }
         
-        .hearts-container {
+        /* Capa para la lluvia de fondo (atrás) */
+        .background-hearts {
             position: absolute;
             top: 0;
             left: 0;
@@ -64,6 +65,17 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+        }
+        
+        /* Capa para las vaquitas y corazones especiales (adelante) */
+        .foreground-items {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15; /* Entre el fondo y el contenido */
         }
         
         @keyframes float {
@@ -86,11 +98,31 @@
             }
         }
         
-        .floating-item {
+        .floating-heart {
             position: absolute;
-            font-size: 24px;
+            font-size: 20px;
+            color: #9c27b0;
             animation: fall linear infinite;
             pointer-events: none;
+        }
+        
+        .special-item {
+            position: absolute;
+            font-size: 30px;
+            pointer-events: none;
+            z-index: 15;
+            animation: explode 1.5s ease-out forwards;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(0.5) translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2) translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
         }
         
         .special-btn {
@@ -132,25 +164,6 @@
             to { opacity: 1; }
         }
         
-        @keyframes explode {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(3);
-                opacity: 0;
-            }
-        }
-        
-        .explosion {
-            position: absolute;
-            font-size: 30px;
-            animation: explode 1s ease-out forwards;
-            pointer-events: none;
-            z-index: 100;
-        }
-        
         @media (max-width: 600px) {
             h1 { font-size: 2em; }
             .message { font-size: 1.1em; }
@@ -159,8 +172,13 @@
     </style>
 </head>
 <body>
-    <div class="hearts-container" id="hearts-container"></div>
+    <!-- Lluvia de corazones de fondo (atrás) -->
+    <div class="background-hearts" id="backgroundHearts"></div>
     
+    <!-- Vaquitas y corazones especiales (adelante) -->
+    <div class="foreground-items" id="foregroundItems"></div>
+    
+    <!-- Contenido principal (lo más adelante) -->
     <div class="container">
         <h1>Para Fernanda 💜🐄</h1>
         <div class="message">
@@ -191,94 +209,90 @@
     </div>
 
     <script>
-        // Elementos para la lluvia
-        const items = ['💜', '🐄', '💝', '🐮', '💗'];
+        // Elementos para mostrar
+        const heartItems = ['💜', '💝', '💗'];
+        const specialItems = ['💜', '🐄', '💝', '🐮'];
         
-        // Crear lluvia de vaquitas y corazones morados
-        function createFallingItems() {
-            const container = document.getElementById('hearts-container');
-            const itemCount = 20;
+        // ===== LLUVIA DE FONDO (CORAZONES) =====
+        function createBackgroundHearts() {
+            const container = document.getElementById('backgroundHearts');
+            const heartCount = 20;
             
-            for (let i = 0; i < itemCount; i++) {
+            for (let i = 0; i < heartCount; i++) {
                 setTimeout(() => {
-                    const item = document.createElement('div');
-                    item.className = 'floating-item';
-                    item.innerHTML = items[Math.floor(Math.random() * items.length)];
-                    item.style.left = Math.random() * 100 + 'vw';
-                    item.style.animationDuration = (Math.random() * 8 + 5) + 's';
-                    item.style.fontSize = (Math.random() * 25 + 15) + 'px';
-                    item.style.opacity = Math.random() * 0.7 + 0.3;
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.innerHTML = heartItems[Math.floor(Math.random() * heartItems.length)];
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animationDuration = (Math.random() * 8 + 5) + 's';
+                    heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                    heart.style.opacity = Math.random() * 0.5 + 0.3;
+                    container.appendChild(heart);
                     
-                    // Colores especiales para vaquitas
-                    if (item.innerHTML === '🐄' || item.innerHTML === '🐮') {
-                        item.style.filter = 'hue-rotate(270deg)';
-                    }
-                    
-                    container.appendChild(item);
-                    
-                    // Eliminar después de la animación
                     setTimeout(() => {
-                        item.remove();
-                    }, parseFloat(item.style.animationDuration) * 1000);
+                        heart.remove();
+                    }, parseFloat(heart.style.animationDuration) * 1000);
                 }, i * 300);
             }
         }
         
-        // Repetir la creación de lluvia
-        createFallingItems();
-        setInterval(createFallingItems, 3000);
+        // Iniciar y repetir la lluvia de fondo
+        createBackgroundHearts();
+        setInterval(createBackgroundHearts, 3000);
         
-        // Crear explosión de vaquitas y corazones
-        function createExplosion(x, y, count) {
-            const container = document.getElementById('hearts-container');
+        // ===== EXPLOSIÓN DE VAQUITAS Y CORAZONES (ADELANTE) =====
+        function createSpecialExplosion() {
+            const container = document.getElementById('foregroundItems');
+            const itemCount = 40;
             
-            for (let i = 0; i < count; i++) {
-                const explosionItem = document.createElement('div');
-                explosionItem.className = 'explosion';
-                explosionItem.innerHTML = items[Math.floor(Math.random() * items.length)];
-                explosionItem.style.left = x + 'px';
-                explosionItem.style.top = y + 'px';
-                explosionItem.style.animationDelay = (i * 0.1) + 's';
+            for (let i = 0; i < itemCount; i++) {
+                const item = document.createElement('div');
+                item.className = 'special-item';
+                item.innerHTML = specialItems[Math.floor(Math.random() * specialItems.length)];
                 
-                // Mover en diferentes direcciones
-                explosionItem.style.transformOrigin = 
-                    `${Math.random() * 100 - 50}% ${Math.random() * 100 - 50}%`;
+                // Posición central con variación
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                const offsetX = (Math.random() - 0.5) * 200;
+                const offsetY = (Math.random() - 0.5) * 200;
                 
-                container.appendChild(explosionItem);
+                item.style.left = `${centerX + offsetX}px`;
+                item.style.top = `${centerY + offsetY}px`;
+                
+                // Dirección de explosión
+                item.style.setProperty('--tx', `${(Math.random() - 0.5) * 300}px`);
+                item.style.setProperty('--ty', `${(Math.random() - 0.5) * 300}px`);
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 30 + 20;
+                item.style.fontSize = `${size}px`;
+                
+                // Color morado para las vaquitas
+                if (item.innerHTML === '🐄' || item.innerHTML === '🐮') {
+                    item.style.filter = 'hue-rotate(270deg)';
+                }
+                
+                container.appendChild(item);
                 
                 // Eliminar después de la animación
                 setTimeout(() => {
-                    explosionItem.remove();
-                }, 1000);
+                    item.remove();
+                }, 1500);
             }
         }
         
-        // Botón especial
-        document.getElementById('specialBtn').addEventListener('click', function(e) {
+        // ===== BOTÓN ESPECIAL =====
+        document.getElementById('specialBtn').addEventListener('click', function() {
             const message = document.getElementById('hiddenMessage');
             message.style.display = 'block';
-            this.textContent = '¡Te amo, Fernanda! 💜🐄';
             
-            // Posición del botón
-            const rect = this.getBoundingClientRect();
-            const x = rect.left + rect.width/2;
-            const y = rect.top + rect.height/2;
-            
-            // Gran explosión central
-            createExplosion(x, y, 30);
-            
-            // Pequeñas explosiones alrededor
-            setTimeout(() => createExplosion(x - 100, y - 50, 10), 200);
-            setTimeout(() => createExplosion(x + 100, y - 30, 10), 400);
-            setTimeout(() => createExplosion(x - 50, y + 70, 10), 600);
+            // Crear explosión especial de vaquitas y corazones morados ADELANTE
+            createSpecialExplosion();
         });
         
-        // Efecto al hacer clic en cualquier corazón o vaquita
+        // Efecto al hacer clic en cualquier corazón
         document.querySelectorAll('.heart').forEach(heart => {
-            heart.addEventListener('click', function(e) {
-                // Pequeña explosión donde se hace clic
-                createExplosion(e.clientX, e.clientY, 15);
-                
+            heart.addEventListener('click', function() {
                 this.style.transform = 'scale(1.5)';
                 this.style.color = '#ab47bc';
                 setTimeout(() => {
