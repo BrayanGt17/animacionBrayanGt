@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #f3e5f5;
+            background: transparent;
             font-family: 'Arial', sans-serif;
             overflow: hidden;
         }
@@ -20,25 +20,26 @@
         .container {
             text-align: center;
             position: relative;
-            z-index: 20; /* Mayor z-index para que esté adelante */
+            z-index: 20;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.9);
+            background: transparent; /* Fondo completamente transparente */
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 90%;
         }
         
         h1 {
-            color: #7b1fa2;
+            color: #ffffff;
             font-size: 2.5em;
             margin-bottom: 20px;
+            text-shadow: 0 0 10px #9c27b0, 0 0 20px #7b1fa2;
         }
         
         .message {
             font-size: 1.3em;
-            color: #4a148c;
+            color: #ffffff;
             margin-bottom: 30px;
             line-height: 1.6;
+            text-shadow: 0 0 5px #9c27b0;
         }
         
         .heart {
@@ -49,14 +50,15 @@
             margin: 0 10px;
             cursor: pointer;
             transition: transform 0.3s;
+            text-shadow: 0 0 15px #e91e63;
+            filter: drop-shadow(0 0 5px #7b1fa2);
         }
         
         .heart:hover {
             transform: scale(1.3);
-            color: #7b1fa2;
+            color: #e91e63;
         }
         
-        /* Capa para la lluvia de fondo (atrás) */
         .background-hearts {
             position: absolute;
             top: 0;
@@ -67,7 +69,6 @@
             z-index: 1;
         }
         
-        /* Capa para las vaquitas y corazones especiales (adelante) */
         .foreground-items {
             position: absolute;
             top: 0;
@@ -75,7 +76,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 15; /* Entre el fondo y el contenido */
+            z-index: 15;
         }
         
         @keyframes float {
@@ -104,6 +105,7 @@
             color: #9c27b0;
             animation: fall linear infinite;
             pointer-events: none;
+            text-shadow: 0 0 10px #e91e63;
         }
         
         .special-item {
@@ -112,6 +114,7 @@
             pointer-events: none;
             z-index: 15;
             animation: explode 1.5s ease-out forwards;
+            text-shadow: 0 0 15px #9c27b0;
         }
         
         @keyframes explode {
@@ -126,37 +129,40 @@
         }
         
         .special-btn {
-            background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+            background: transparent;
             color: white;
-            border: none;
+            border: 2px solid #9c27b0;
             padding: 12px 25px;
             font-size: 1.1em;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
             margin-top: 20px;
+            text-shadow: 0 0 5px #9c27b0;
+            box-shadow: 0 0 15px #7b1fa2;
         }
         
         .special-btn:hover {
-            background: linear-gradient(45deg, #7b1fa2, #6a1b9a);
+            background: rgba(156, 39, 176, 0.2);
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(156, 39, 176, 0.4);
+            box-shadow: 0 0 20px #9c27b0;
         }
         
         .hidden-message {
             display: none;
             margin-top: 20px;
             font-size: 1.1em;
-            color: #7b1fa2;
+            color: #ffffff;
             animation: fadeIn 1s;
+            text-shadow: 0 0 10px #9c27b0;
         }
         
         .phone-message {
             font-style: italic;
             margin-top: 15px;
-            color: #6a1b9a;
+            color: #e1bee7;
             font-size: 1em;
+            text-shadow: 0 0 5px #7b1fa2;
         }
         
         @keyframes fadeIn {
@@ -172,15 +178,15 @@
     </style>
 </head>
 <body>
-    <!-- Lluvia de corazones de fondo (atrás) -->
+    <!-- Lluvia de corazones de fondo -->
     <div class="background-hearts" id="backgroundHearts"></div>
     
-    <!-- Vaquitas y corazones especiales (adelante) -->
+    <!-- Vaquitas y corazones especiales -->
     <div class="foreground-items" id="foregroundItems"></div>
     
-    <!-- Contenido principal (lo más adelante) -->
+    <!-- Contenido principal -->
     <div class="container">
-        <h1>Para Fernanda 💜🐄</h1>
+        <h1>Para El Amor de mi Vida 💜🐄</h1>
         <div class="message">
             Cada latido de mi corazón lleva tu nombre.<br>
             Cada momento a tu lado es un regalo del universo.
@@ -194,17 +200,17 @@
             <span class="heart">💗</span>
         </div>
         
-        <div style="font-size: 2em; margin: 20px 0; color: #7b1fa2;">
+        <div style="font-size: 2em; margin: 20px 0; color: #ffffff; text-shadow: 0 0 15px #9c27b0;">
             Te amo con todo mi corazón
         </div>
         
         <div class="phone-message">
-            "Aunque no me escuches cuando hacemos llamada... jaja 💜🐄"
+            "Aunque no me escuches cuando hacemos llamada... jaja 💜"
         </div>
         
         <button class="special-btn" id="specialBtn">Mensaje Especial</button>
         <div class="hidden-message" id="hiddenMessage">
-            Eres la persona más especial en mi vida, incluso cuando la conexión falla. 💕🐮
+            Eres la persona más especial en mi vida, incluso cuando la conexión falla. 💕
         </div>
     </div>
 
@@ -236,11 +242,7 @@
             }
         }
         
-        // Iniciar y repetir la lluvia de fondo
-        createBackgroundHearts();
-        setInterval(createBackgroundHearts, 3000);
-        
-        // ===== EXPLOSIÓN DE VAQUITAS Y CORAZONES (ADELANTE) =====
+        // ===== EXPLOSIÓN DE VAQUITAS Y CORAZONES =====
         function createSpecialExplosion() {
             const container = document.getElementById('foregroundItems');
             const itemCount = 40;
@@ -269,7 +271,7 @@
                 
                 // Color morado para las vaquitas
                 if (item.innerHTML === '🐄' || item.innerHTML === '🐮') {
-                    item.style.filter = 'hue-rotate(270deg)';
+                    item.style.filter = 'hue-rotate(270deg) drop-shadow(0 0 5px #9c27b0)';
                 }
                 
                 container.appendChild(item);
@@ -286,15 +288,22 @@
             const message = document.getElementById('hiddenMessage');
             message.style.display = 'block';
             
-            // Crear explosión especial de vaquitas y corazones morados ADELANTE
+            // Cambiar texto del botón
+            this.textContent = 'Te amo Fercita😍';
+            
+            // Crear explosión especial
             createSpecialExplosion();
         });
+        
+        // Iniciar y repetir la lluvia de fondo
+        createBackgroundHearts();
+        setInterval(createBackgroundHearts, 3000);
         
         // Efecto al hacer clic en cualquier corazón
         document.querySelectorAll('.heart').forEach(heart => {
             heart.addEventListener('click', function() {
                 this.style.transform = 'scale(1.5)';
-                this.style.color = '#ab47bc';
+                this.style.color = '#e91e63';
                 setTimeout(() => {
                     this.style.transform = 'scale(1)';
                     this.style.color = '#9c27b0';
