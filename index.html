@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corazón Indestructible 💖</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .heart {
+            font-size: 150px;
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000, 
+                0 0 20px #ff0000, 
+                0 0 30px #ff0000;
+            animation: heartbeat 0.8s infinite, glow 2s infinite alternate;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.3s;
+        }
+        
+        .heart:hover {
+            transform: scale(1.2);
+        }
+        
+        .message {
+            margin-top: 30px;
+            color: white;
+            font-size: 24px;
+            text-shadow: 0 0 5px #fff;
+        }
+        
+        .shield {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 5px solid rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: shield-pulse 3s infinite;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .active .shield {
+            opacity: 1;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1.2); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff0000; }
+            to { text-shadow: 0 0 30px #ff0000, 0 0 40px #ff5555; }
+        }
+        
+        @keyframes shield-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(0, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
+        }
+        
+        /* Efecto de partículas (ataques) */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="heart" id="heart">❤️</div>
+        <div class="message">¡Corazón Indestructible! 💪❤️</div>
+        <div class="shield" id="shield"></div>
+    </div>
+
+    <script>
+        const heart = document.getElementById('heart');
+        const shield = document.getElementById('shield');
+        const container = document.querySelector('.container');
+        
+        // Activar escudo al hacer clic
+        heart.addEventListener('click', () => {
+            document.body.classList.toggle('active');
+        });
+        
+        // Ataques aleatorios al corazón (simula resistencia)
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                createParticle();
+            }
+        }, 500);
+        
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Posición aleatoria alrededor del corazón
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            // Tamaño y animación
+            const size = Math.random() * 10 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // Dirección hacia el corazón
+            const heartRect = heart.getBoundingClientRect();
+            const heartX = heartRect.left + heartRect.width / 2;
+            const heartY = heartRect.top + heartRect.height / 2;
+            
+            const angle = Math.atan2(heartY - y, heartX - x);
+            const speed = 3;
+            
+            document.body.appendChild(particle);
+            
+            let posX = x;
+            let posY = y;
+            let distance = 0;
+            const maxDistance = Math.sqrt(
+                Math.pow(heartX - x, 2) + Math.pow(heartY - y, 2)
+            );
+            
+            const move = setInterval(() => {
+                posX += Math.cos(angle) * speed;
+                posY += Math.sin(angle) * speed;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                
+                distance += speed;
+                
+                // Si choca con el escudo o llega al corazón
+                if (distance >= maxDistance || 
+                    (document.body.classList.contains('active') && 
+                     distance >= maxDistance * 0.7)) {
+                    clearInterval(move);
+                    particle.remove();
+                    
+                    // Efecto de impacto en el escudo
+                    if (document.body.classList.contains('active')) {
+                        shield.style.borderColor = 'rgba(255, 0, 0, 0.7)';
+                        setTimeout(() => {
+                            shield.style.borderColor = 'rgba(0, 255, 255, 0.5)';
+                        }, 300);
+                    }
+                }
+            }, 20);
+        }
+    </script>
+</body>
+</html>
